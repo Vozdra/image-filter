@@ -86,7 +86,8 @@ function savedFile() {
 let file;
 
 function uploadImage(){
-	file = this.files;
+  file = this.files;
+  // https://wp-kama.ru/id_9026/jquery-ajax-zagruzka-fajlov-na-server.html
 };
 
 
