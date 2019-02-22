@@ -15,18 +15,19 @@
   <div class="box image">
 
     <img
-      src=""
+      src="labrador.jpg"
       alt="Введите URL картинки в поле ниже"
       id="image"
     >
-    
+
+    <canvas id="can-image" width="360px" height=""></canvas>
 
     <div class="input">
       <input
         id="img-url"
-        type="text"
+        type="file"
         placeholder="Введите URL картинки"
-        value="https://www.royal-canin.ru/upload/iblock/79a/labrador1_copy.jpg"
+        value=""
       >
     </div>
   </div>
@@ -58,8 +59,8 @@
       </div>
     </div>
     <div class="buttons">
-      <button class="btn save" id="save" disabled>
-        <a href="javascript:void(0);" id="save-link">Сохранить</a>
+      <button class="btn save" id="save-btn" disabled>
+        <a href="javascript:void(0);" id="download-image">Сохранить</a>
       </button>
       <button class="btn" id="reset" disabled>Сбросить</button>
     </div>

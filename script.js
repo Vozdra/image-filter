@@ -6,8 +6,10 @@ const grayscale = document.querySelector('#grayscale'),
       image = document.querySelector('#image'),
       reset = document.querySelector('#reset'),
       imgUrl = document.querySelector('#img-url'),
-      saveBtn = document.querySelector('#save'),
-      saveLink = document.querySelector('#save-link'),
+      saveBtn = document.querySelector('#save-btn'),
+      downloadFile = document.querySelector('#download-image'),
+      canvas = document.querySelector('#can-image'),
+      ctx = canvas.getContext('2d')
 
       defaults = {
         grayscale: 0,
@@ -17,7 +19,18 @@ const grayscale = document.querySelector('#grayscale'),
         saturate: 100
       }
 
-image.setAttribute('src', imgUrl.value);
+let proportion,
+    canvasHeight
+
+image.onload = function() {
+  
+  proportion = Math.round( (image.width / canvas.width) * 10) / 10;
+  canvasHeight = Math.round( (image.height / proportion) * 10) / 10;
+  canvas.height = canvasHeight;
+
+  ctx.drawImage(image, 0, 0, canvas.width, canvasHeight);
+}
+
 
 grayscale.addEventListener('input', updateFilterValue);
 contrast.addEventListener('input', updateFilterValue);
@@ -26,33 +39,37 @@ sepia.addEventListener('input', updateFilterValue);
 saturate.addEventListener('input', updateFilterValue);
 reset.addEventListener('click', resetFilterValue);
 imgUrl.addEventListener('input', changeFilteredImage);
-saveBtn.addEventListener('click', saveImage);
+imgUrl.addEventListener('change', uploadImage);
+saveBtn.addEventListener('click', savedFile);
 
 function updateFilterValue() {
 
   reset.disabled = false;
   saveBtn.disabled = false;
 
-  image.style.filter = `
+  ctx.filter = `
     grayscale(${grayscale.value}%)
     contrast(${contrast.value}%)
     brightness(${brightness.value}%)
     sepia(${sepia.value}%)
     saturate(${saturate.value}%)
   `
+
+  ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
 }
 
 function resetFilterValue(){
 
   reset.disabled = true;
   saveBtn.disabled = true;
-  image.style.filter = '';
+  ctx.filter = 'none';
+  ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
 
-  grayscale.value = defaults.grayscale,
-  contrast.value = defaults.contrast,
-  brightness.value = defaults.brightness,
-  sepia.value = defaults.sepia,
-  saturate.value = defaults.saturate
+  grayscale.value = defaults.grayscale;
+  contrast.value = defaults.contrast;
+  brightness.value = defaults.brightness;
+  sepia.value = defaults.sepia;
+  saturate.value = defaults.saturate;
 
 }
 
@@ -60,12 +77,16 @@ function changeFilteredImage() {
   image.setAttribute('src', imgUrl.value);
 }
 
-function saveImage() {
+function savedFile() {
+  alert("wait");
+};
 
-  alert("Сохранение временно не доступно... По причине того, что я - собака-как-это-сделать-еще-не-знака. Хи :)")
+// upload file
 
-  // saveLink.setAttribute("href", imgUrl.value);
-  // saveLink.setAttribute("download", 'image.png');
-  // saveLink.click();
-  
-}
+let file;
+
+function uploadImage(){
+	file = this.files;
+};
+
+
