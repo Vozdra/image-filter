@@ -93,7 +93,7 @@ function uploadImage(e) {
   let formData = new FormData();
   formData.append('img', file);
 
-  let xhr = new XMLHttpRequest();
+  let xhr = new XMLHttpRequest()
   xhr.open('POST', 'upload.php');
   xhr.send(formData);
 
