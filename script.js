@@ -20,27 +20,28 @@ const grayscale = document.querySelector('#grayscale'),
       }
 
 let proportion,
-    canvasHeight
+    canvasHeight,
+    newImageSrc
 
-image.onload = function() {
-  
+grayscale.addEventListener('input', updateFilterValue)
+contrast.addEventListener('input', updateFilterValue)
+brightness.addEventListener('input', updateFilterValue)
+sepia.addEventListener('input', updateFilterValue)
+saturate.addEventListener('input', updateFilterValue)
+reset.addEventListener('click', resetFilterValue)
+imgUrl.addEventListener('change', uploadImage)
+saveBtn.addEventListener('click', saveImage)
+image.addEventListener('load', drawingCanvas)
+      
+function drawingCanvas() {
+
   proportion = Math.round( (image.width / canvas.width) * 10) / 10;
   canvasHeight = Math.round( (image.height / proportion) * 10) / 10;
   canvas.height = canvasHeight;
 
-  ctx.drawImage(image, 0, 0, canvas.width, canvasHeight);
+  ctx.drawImage(image, 0, 0, canvas.width, canvasHeight)
+
 }
-
-
-grayscale.addEventListener('input', updateFilterValue);
-contrast.addEventListener('input', updateFilterValue);
-brightness.addEventListener('input', updateFilterValue);
-sepia.addEventListener('input', updateFilterValue);
-saturate.addEventListener('input', updateFilterValue);
-reset.addEventListener('click', resetFilterValue);
-imgUrl.addEventListener('input', changeFilteredImage);
-imgUrl.addEventListener('change', uploadImage);
-saveBtn.addEventListener('click', savedFile);
 
 function updateFilterValue() {
 
@@ -56,6 +57,7 @@ function updateFilterValue() {
   `
 
   ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
 }
 
 function resetFilterValue(){
@@ -73,21 +75,55 @@ function resetFilterValue(){
 
 }
 
-function changeFilteredImage() {
-  image.setAttribute('src', imgUrl.value);
+function saveImage(){
+
+  const dataUrl = canvas.toDataURL('image/jpeg')
+
+  downloadFile.setAttribute('download','your-image.jpeg')
+  downloadFile.setAttribute('href', dataUrl)
+  downloadFile.click();
+
+  clearingUpload();
 }
 
-function savedFile() {
-  alert("wait");
-};
+function uploadImage(e) {
 
-// upload file
+  const file = e.target.files[0];
 
-let file;
+  let formData = new FormData();
+  formData.append('img', file);
 
-function uploadImage(){
-  file = this.files;
-  // https://wp-kama.ru/id_9026/jquery-ajax-zagruzka-fajlov-na-server.html
-};
+  let xhr = new XMLHttpRequest();
+  xhr.open('POST', 'upload.php');
+  xhr.send(formData);
+
+  xhr.addEventListener('load', function() {
+    newImageSrc = "img-uploads/" + file.name + "";
+    image.setAttribute('src', newImageSrc);
+    
+    if (xhr.status == 200 && xhr.readyState == 4) {
+      const responseBody = xhr.responseText;
+      const parsedData = JSON.parse(responseBody);
+  
+      if(parsedData.error || parsedData.warning) {
+        const errorText = parsedData.error ? parsedData.error : parsedData.warning;
+        const errorElem = document.createElement('p');
+
+        errorElem.innerHTML = errorText;
+        document.querySelector('.input').append(errorElem);
+      }
+  
+    }
+  })
+  
+}
+
+function clearingUpload() {
+
+  let xhr = new XMLHttpRequest();
+  xhr.open('POST', 'clear.php');
+  xhr.send();
+
+}
 
 
