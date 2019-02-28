@@ -38,5 +38,4 @@ if ($method === "POST" && $fileSize != 0 && in_array($_FILES["img"]["type"], $ty
   }
   
 }
-
 echo json_encode($json);
