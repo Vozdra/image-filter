@@ -32,7 +32,10 @@ reset.addEventListener('click', resetFilterValue)
 imgUrl.addEventListener('change', uploadImage)
 saveBtn.addEventListener('click', saveImage)
 image.addEventListener('load', drawingCanvas)
-      
+
+let chachedSrc = localStorage.getItem('imgSrc');
+image.setAttribute('src', chachedSrc ? chachedSrc : 'my-libr.jpg');
+
 function drawingCanvas() {
 
   proportion = Math.round( (image.width / canvas.width) * 10) / 10;
@@ -84,6 +87,9 @@ function saveImage(){
   downloadFile.click();
 
   clearingUpload();
+
+  localStorage.removeItem('imgSrc');
+  
 }
 
 function uploadImage(e) {
@@ -93,13 +99,15 @@ function uploadImage(e) {
   let formData = new FormData();
   formData.append('img', file);
 
-  let xhr = new XMLHttpRequest()
+  let xhr = new XMLHttpRequest();
   xhr.open('POST', 'upload.php');
   xhr.send(formData);
 
   xhr.addEventListener('load', function() {
-    newImageSrc = "img-uploads/" + file.name + "";
+    newImageSrc = "img-uploads/" + file.name;
     image.setAttribute('src', newImageSrc);
+
+    localStorage.setItem('imgSrc', newImageSrc);
     
     if (xhr.status == 200 && xhr.readyState == 4) {
       const responseBody = xhr.responseText;
@@ -114,6 +122,7 @@ function uploadImage(e) {
       }
   
     }
+    
   })
   
 }
